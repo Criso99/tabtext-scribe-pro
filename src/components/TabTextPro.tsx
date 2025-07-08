@@ -172,7 +172,10 @@ const TabTextPro = () => {
       return;
     }
 
-    if (!mistralApiKey) {
+    // Get fresh API key from localStorage to ensure it's current
+    const currentApiKey = localStorage.getItem('mistral-api-key') || mistralApiKey;
+    
+    if (!currentApiKey || currentApiKey.trim() === '') {
       toast({
         title: "API Key Required",
         description: "Please add your Mistral API key in settings to use AI improvement.",
@@ -184,11 +187,13 @@ const TabTextPro = () => {
     setIsImproving(true);
     
     try {
+      console.log('Making request to Mistral API...'); // Debug log
+      
       const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${mistralApiKey}`,
+          'Authorization': `Bearer ${currentApiKey.trim()}`,
         },
         body: JSON.stringify({
           model: 'mistral-tiny',
@@ -207,27 +212,37 @@ const TabTextPro = () => {
         }),
       });
 
+      console.log('Response status:', response.status); // Debug log
+
       if (!response.ok) {
-        throw new Error(`API request failed: ${response.status}`);
+        if (response.status === 401) {
+          throw new Error('Invalid API key. Please check your Mistral API key and try again.');
+        } else if (response.status === 429) {
+          throw new Error('Rate limit exceeded. Please wait a moment and try again.');
+        } else {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
       }
 
       const data = await response.json();
-      const improvedText = data.choices[0]?.message?.content;
+      console.log('API response received:', data); // Debug log
+      
+      const improvedText = data.choices?.[0]?.message?.content;
 
-      if (improvedText) {
-        updateDocument(activeTab, improvedText);
+      if (improvedText && improvedText.trim()) {
+        updateDocument(activeTab, improvedText.trim());
         toast({
           title: "Text Improved",
           description: "Your text has been enhanced by AI.",
         });
       } else {
-        throw new Error('No improved text received');
+        throw new Error('No improved text received from API');
       }
     } catch (error) {
       console.error('Mistral API error:', error);
       toast({
         title: "AI Improvement Failed",
-        description: "There was an error improving your text. Please check your API key and try again.",
+        description: error instanceof Error ? error.message : "There was an error improving your text. Please check your API key and try again.",
         variant: "destructive",
       });
     } finally {
