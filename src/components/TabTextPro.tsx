@@ -200,19 +200,23 @@ const TabTextPro = () => {
           'Authorization': `Bearer ${currentApiKey.trim()}`,
         },
         body: JSON.stringify({
-          model: 'mistral-tiny',
+          model: 'mistral-large-latest',
           messages: [
             {
               role: 'system',
-              content: 'You are a professional text editor. Improve the following text by correcting grammar, spelling, style, and tone. Return only the improved text without any explanations or additional commentary.'
+              content: language === 'it' 
+                ? 'Sei un editor di testo professionale. Migliora il seguente testo correggendo grammatica, ortografia, stile e tono. Mantieni la lingua originale del testo. Restituisci solo il testo migliorato senza spiegazioni o commenti aggiuntivi.'
+                : 'You are a professional text editor. Improve the following text by correcting grammar, spelling, style, and tone. Maintain the original language of the text. Return only the improved text without any explanations or additional commentary.'
             },
             {
               role: 'user',
-              content: `Improve this text: ${doc.content}`
+              content: language === 'it' 
+                ? `Migliora questo testo: ${doc.content}`
+                : `Improve this text: ${doc.content}`
             }
           ],
           temperature: 0.3,
-          max_tokens: 2000,
+          max_tokens: 4000,
         }),
       });
 

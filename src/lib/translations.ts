@@ -83,7 +83,7 @@ export const translations: Record<string, Translations> = {
     
     // Settings Dialog
     settingsTitle: "Settings",
-    settingsDescription: "Configure your Mistral API key to enable AI text improvement.",
+    settingsDescription: "Configure your Mistral API key to enable AI text improvement. Now using Mistral Large for superior results.",
     apiKeyLabel: "Mistral API Key",
     apiKeyPlaceholder: "Enter your Mistral API key...",
     apiKeyDescription: "Your API key is stored locally in your browser and never shared.",
@@ -147,7 +147,7 @@ export const translations: Record<string, Translations> = {
     
     // Settings Dialog
     settingsTitle: "Impostazioni",
-    settingsDescription: "Configura la tua chiave API Mistral per abilitare il miglioramento del testo con IA.",
+    settingsDescription: "Configura la tua chiave API Mistral per abilitare il miglioramento del testo con IA. Ora utilizza Mistral Large per risultati superiori.",
     apiKeyLabel: "Chiave API Mistral",
     apiKeyPlaceholder: "Inserisci la tua chiave API Mistral...",
     apiKeyDescription: "La tua chiave API è memorizzata localmente nel browser e non viene mai condivisa.",
