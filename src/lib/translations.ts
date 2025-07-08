@@ -43,6 +43,7 @@ export interface Translations {
   aiImprovementFailedDescription: string;
   undoAction: string;
   undoActionDescription: string;
+  nothingToUndo: string;
   
   // AI Improvement
   improving: string;
@@ -96,7 +97,8 @@ export const translations: Record<string, Translations> = {
     aiImprovementFailed: "AI Improvement Failed",
     aiImprovementFailedDescription: "There was an error improving your text. Please check your API key and try again.",
     undoAction: "Undo",
-    undoActionDescription: "Undo functionality would revert the last change.",
+    undoActionDescription: "Last change has been undone.",
+    nothingToUndo: "Nothing to undo.",
     
     // AI Improvement
     improving: "Improving...",
@@ -149,7 +151,8 @@ export const translations: Record<string, Translations> = {
     aiImprovementFailed: "Miglioramento IA Fallito",
     aiImprovementFailedDescription: "C'è stato un errore nel migliorare il testo. Controlla la tua chiave API e riprova.",
     undoAction: "Annulla",
-    undoActionDescription: "La funzione Annulla ripristinerebbe l'ultima modifica.",
+    undoActionDescription: "L'ultima modifica è stata annullata.",
+    nothingToUndo: "Niente da annullare.",
     
     // AI Improvement
     improving: "Migliorando...",

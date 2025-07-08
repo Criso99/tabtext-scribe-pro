@@ -15,12 +15,14 @@ interface Document {
   content: string;
   saved: boolean;
   wordCount: number;
+  history: string[];
+  historyIndex: number;
 }
 
 const TabTextPro = () => {
   const { language, t, changeLanguage } = useLanguage();
   const [documents, setDocuments] = useState<Document[]>([
-    { id: '1', title: t.untitledDocument, content: '', saved: true, wordCount: 0 }
+    { id: '1', title: t.untitledDocument, content: '', saved: true, wordCount: 0, history: [''], historyIndex: 0 }
   ]);
   const [activeTab, setActiveTab] = useState('1');
   const [darkMode, setDarkMode] = useState(() => {
@@ -55,7 +57,9 @@ const TabTextPro = () => {
       title: t.untitledDocument,
       content: '',
       saved: true,
-      wordCount: 0
+      wordCount: 0,
+      history: [''],
+      historyIndex: 0
     };
     setDocuments([...documents, newDoc]);
     setActiveTab(newId);
@@ -80,7 +84,9 @@ const TabTextPro = () => {
               ...doc, 
               content, 
               saved: false,
-              wordCount: content.trim().split(/\s+/).filter(word => word.length > 0).length
+              wordCount: content.trim().split(/\s+/).filter(word => word.length > 0).length,
+              history: [...doc.history.slice(0, doc.historyIndex + 1), content],
+              historyIndex: doc.historyIndex + 1
             }
           : doc
       )
@@ -91,14 +97,27 @@ const TabTextPro = () => {
     const doc = documents.find(d => d.id === activeTab);
     if (!doc) return;
 
-    // Mock save functionality
+    // Create and download file
+    const fileName = doc.title.endsWith('.txt') ? doc.title : `${doc.title}.txt`;
+    const blob = new Blob([doc.content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    // Mark as saved
     setDocuments(docs => 
       docs.map(d => d.id === activeTab ? { ...d, saved: true } : d)
     );
     
     toast({
       title: t.documentSaved,
-      description: `${doc.title} ${t.documentSavedDescription}`,
+      description: `${fileName} ${t.documentSavedDescription}`,
     });
   };
 
@@ -119,7 +138,9 @@ const TabTextPro = () => {
         title: file.name,
         content,
         saved: true,
-        wordCount: content.trim().split(/\s+/).filter(word => word.length > 0).length
+        wordCount: content.trim().split(/\s+/).filter(word => word.length > 0).length,
+        history: [content],
+        historyIndex: 0
       };
       setDocuments([...documents, newDoc]);
       setActiveTab(newId);
@@ -322,12 +343,52 @@ const TabTextPro = () => {
   };
 
   const undoAction = () => {
-    // Mock undo functionality
+    const doc = documents.find(d => d.id === activeTab);
+    if (!doc || doc.historyIndex <= 0) {
+      toast({
+        title: t.undoAction,
+        description: t.nothingToUndo,
+      });
+      return;
+    }
+
+    const newHistoryIndex = doc.historyIndex - 1;
+    const previousContent = doc.history[newHistoryIndex];
+    
+    setDocuments(docs => 
+      docs.map(d => 
+        d.id === activeTab 
+          ? { 
+              ...d, 
+              content: previousContent,
+              saved: false,
+              wordCount: previousContent.trim().split(/\s+/).filter(word => word.length > 0).length,
+              historyIndex: newHistoryIndex
+            }
+          : d
+      )
+    );
+
     toast({
       title: t.undoAction,
       description: t.undoActionDescription,
     });
   };
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
+        event.preventDefault();
+        undoAction();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeTab, documents]);
 
   const activeDocument = documents.find(doc => doc.id === activeTab);
 
