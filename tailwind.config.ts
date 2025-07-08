@@ -18,6 +18,12 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'space-grotesk': ['Space Grotesk', 'sans-serif'],
+				'inter': ['Inter', 'sans-serif'],
+				'heading': ['Space Grotesk', 'sans-serif'],
+				'body': ['Inter', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
