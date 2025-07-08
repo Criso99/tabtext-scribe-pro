@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, X, FileText, Save, FolderOpen, Search, RotateCcw, Moon, Sun, Sparkles } from 'lucide-react';
+import { Plus, X, FileText, Save, FolderOpen, Search, RotateCcw, Moon, Sun, Sparkles, Key, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 
 interface Document {
@@ -28,6 +29,11 @@ const TabTextPro = () => {
   const [replaceTerm, setReplaceTerm] = useState('');
   const [caseSensitive, setCaseSensitive] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [mistralApiKey, setMistralApiKey] = useState(() => {
+    return localStorage.getItem('mistral-api-key') || '';
+  });
+  const [isImproving, setIsImproving] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,6 +47,17 @@ const TabTextPro = () => {
     }
     localStorage.setItem('tabtext-theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
+
+  // Save API key to localStorage
+  const saveApiKey = (key: string) => {
+    setMistralApiKey(key);
+    localStorage.setItem('mistral-api-key', key);
+    setIsSettingsOpen(false);
+    toast({
+      title: "API Key Saved",
+      description: "Your Mistral API key has been saved securely in your browser.",
+    });
+  };
 
   const createNewDocument = () => {
     const newId = Date.now().toString();
@@ -155,11 +172,67 @@ const TabTextPro = () => {
       return;
     }
 
-    // Mock AI improvement - in real app would call LLM API
-    toast({
-      title: "AI Improvement",
-      description: "AI text improvement would analyze and enhance your content here.",
-    });
+    if (!mistralApiKey) {
+      toast({
+        title: "API Key Required",
+        description: "Please add your Mistral API key in settings to use AI improvement.",
+      });
+      setIsSettingsOpen(true);
+      return;
+    }
+
+    setIsImproving(true);
+    
+    try {
+      const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${mistralApiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'mistral-tiny',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a professional text editor. Improve the following text by correcting grammar, spelling, style, and tone. Return only the improved text without any explanations or additional commentary.'
+            },
+            {
+              role: 'user',
+              content: `Improve this text: ${doc.content}`
+            }
+          ],
+          temperature: 0.3,
+          max_tokens: 2000,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const improvedText = data.choices[0]?.message?.content;
+
+      if (improvedText) {
+        updateDocument(activeTab, improvedText);
+        toast({
+          title: "Text Improved",
+          description: "Your text has been enhanced by AI.",
+        });
+      } else {
+        throw new Error('No improved text received');
+      }
+    } catch (error) {
+      console.error('Mistral API error:', error);
+      toast({
+        title: "AI Improvement Failed",
+        description: "There was an error improving your text. Please check your API key and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsImproving(false);
+    }
   };
 
   const undoAction = () => {
@@ -238,10 +311,55 @@ const TabTextPro = () => {
             </DialogContent>
           </Dialog>
 
-          <Button variant="ghost" size="sm" onClick={improveText}>
+          <Button variant="ghost" size="sm" onClick={improveText} disabled={isImproving}>
             <Sparkles className="h-4 w-4 mr-1" />
-            AI Improve
+            {isImproving ? 'Improving...' : 'AI Improve'}
           </Button>
+
+          <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Settings</DialogTitle>
+                <DialogDescription>
+                  Configure your Mistral API key to enable AI text improvement.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="apiKey">Mistral API Key</Label>
+                  <Input
+                    id="apiKey"
+                    type="password"
+                    placeholder="Enter your Mistral API key..."
+                    defaultValue={mistralApiKey}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        saveApiKey((e.target as HTMLInputElement).value);
+                      }
+                    }}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Your API key is stored locally in your browser and never shared.
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => {
+                    const input = document.getElementById('apiKey') as HTMLInputElement;
+                    saveApiKey(input.value);
+                  }}
+                  className="w-full"
+                >
+                  <Key className="h-4 w-4 mr-2" />
+                  Save API Key
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           <Button 
             variant="ghost" 
