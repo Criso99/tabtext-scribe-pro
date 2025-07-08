@@ -40,6 +40,7 @@ export interface Translations {
   documentSavedDescription: string;
   apiKeySaved: string;
   apiKeySavedDescription: string;
+  envFileDownloaded: string;
   replaceCompleted: string;
   replaceCompletedDescription: string;
   noMatchesFound: string;
@@ -105,6 +106,7 @@ export const translations: Record<string, Translations> = {
     documentSavedDescription: "has been saved successfully.",
     apiKeySaved: "API Key Saved",
     apiKeySavedDescription: "Your Mistral API key has been saved securely in your browser.",
+    envFileDownloaded: "The .env file has been downloaded. Place it in your project root directory to make the API key persistent across sessions.",
     replaceCompleted: "Replace completed",
     replaceCompletedDescription: "Replaced",
     noMatchesFound: "No matches found",
@@ -169,6 +171,7 @@ export const translations: Record<string, Translations> = {
     documentSavedDescription: "è stato salvato con successo.",
     apiKeySaved: "Chiave API Salvata",
     apiKeySavedDescription: "La tua chiave API Mistral è stata salvata in modo sicuro nel browser.",
+    envFileDownloaded: "Il file .env è stato scaricato. Posizionalo nella directory principale del progetto per rendere la chiave API persistente tra le sessioni.",
     replaceCompleted: "Sostituzione completata",
     replaceCompletedDescription: "Sostituito",
     noMatchesFound: "Nessuna corrispondenza trovata",

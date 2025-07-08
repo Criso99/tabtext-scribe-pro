@@ -35,7 +35,8 @@ const TabTextPro = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [mistralApiKey, setMistralApiKey] = useState(() => {
-    return localStorage.getItem('mistral-api-key') || '';
+    // Prima prova a leggere dal .env, poi dal localStorage come fallback
+    return import.meta.env.VITE_MISTRAL_API_KEY || localStorage.getItem('mistral-api-key') || '';
   });
   const [isImproving, setIsImproving] = useState(false);
   const { toast } = useToast();
@@ -52,15 +53,59 @@ const TabTextPro = () => {
     localStorage.setItem('tabtext-theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
-  // Save API key to localStorage
-  const saveApiKey = (key: string) => {
+  // Save API key to .env file
+  const saveApiKey = async (key: string) => {
     setMistralApiKey(key);
-    localStorage.setItem('mistral-api-key', key);
+    
+    try {
+      // Salva nel file .env
+      const envContent = `VITE_MISTRAL_API_KEY=${key}\n`;
+      
+      // Usa l'API File System se disponibile (per app locali)
+      if ('showSaveFilePicker' in window) {
+        try {
+          const fileHandle = await window.showSaveFilePicker({
+            suggestedName: '.env',
+            types: [{
+              description: 'Environment files',
+              accept: { 'text/plain': ['.env'] }
+            }]
+          });
+          const writable = await fileHandle.createWritable();
+          await writable.write(envContent);
+          await writable.close();
+        } catch (err) {
+          // Se l'utente cancella il dialog, salva comunque nel localStorage
+          localStorage.setItem('mistral-api-key', key);
+        }
+      } else {
+        // Fallback: salva nel localStorage e mostra istruzioni
+        localStorage.setItem('mistral-api-key', key);
+        
+        // Crea e scarica automaticamente il file .env
+        const blob = new Blob([envContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '.env';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        toast({
+          title: t.apiKeySaved,
+          description: t.envFileDownloaded,
+          duration: 8000,
+        });
+      }
+    } catch (error) {
+      console.error('Error saving API key:', error);
+      // Fallback: salva solo nel localStorage
+      localStorage.setItem('mistral-api-key', key);
+    }
+    
     setIsSettingsOpen(false);
-    toast({
-      title: t.apiKeySaved,
-      description: t.apiKeySavedDescription,
-    });
   };
 
   const createNewDocument = () => {
@@ -176,8 +221,10 @@ const TabTextPro = () => {
       return;
     }
 
-    // Get fresh API key from localStorage to ensure it's current
-    const currentApiKey = localStorage.getItem('mistral-api-key') || mistralApiKey;
+    // Get fresh API key from .env or localStorage
+    const currentApiKey = import.meta.env.VITE_MISTRAL_API_KEY || 
+                         localStorage.getItem('mistral-api-key') || 
+                         mistralApiKey;
     
     if (!currentApiKey || currentApiKey.trim() === '') {
       toast({
@@ -373,6 +420,23 @@ const TabTextPro = () => {
                 <DialogTitle>{t.settingsTitle}</DialogTitle>
                 <DialogDescription>
                   {t.settingsDescription}
+                  <br /><br />
+                  <strong>{language === 'it' ? 'Istruzioni per il salvataggio persistente:' : 'Instructions for persistent storage:'}</strong>
+                  <br />
+                  {language === 'it' 
+                    ? '1. Inserisci la tua chiave API e clicca "Salva"'
+                    : '1. Enter your API key and click "Save"'
+                  }
+                  <br />
+                  {language === 'it' 
+                    ? '2. Il file .env verrà scaricato automaticamente'
+                    : '2. The .env file will be downloaded automatically'
+                  }
+                  <br />
+                  {language === 'it' 
+                    ? '3. Posiziona il file .env nella directory principale del progetto'
+                    : '3. Place the .env file in your project root directory'
+                  }
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
