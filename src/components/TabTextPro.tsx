@@ -1,15 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, X, FileText, Save, FolderOpen, Search, RotateCcw, Moon, Sun, Sparkles, Key, Settings, Languages } from 'lucide-react';
+import { Plus, X, FileText, Save, FolderOpen, Search, RotateCcw, Moon, Sun, Sparkles, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Language } from '@/lib/translations';
 
 interface Document {
   id: string;
@@ -33,11 +31,6 @@ const TabTextPro = () => {
   const [replaceTerm, setReplaceTerm] = useState('');
   const [caseSensitive, setCaseSensitive] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [mistralApiKey, setMistralApiKey] = useState(() => {
-    // Prima prova a leggere dal .env, poi dal localStorage come fallback
-    return import.meta.env.VITE_MISTRAL_API_KEY || localStorage.getItem('VITE_MISTRAL_API_KEY') || '';
-  });
   const [isImproving, setIsImproving] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [lastRequestTime, setLastRequestTime] = useState(0);
@@ -54,61 +47,6 @@ const TabTextPro = () => {
     }
     localStorage.setItem('tabtext-theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
-
-  // Save API key to .env file
-  const saveApiKey = async (key: string) => {
-    setMistralApiKey(key);
-    
-    try {
-      // Salva nel file .env
-      const envContent = `VITE_MISTRAL_API_KEY=${key}\n`;
-      
-      // Usa l'API File System se disponibile (per app locali)
-      if ('showSaveFilePicker' in window) {
-        try {
-          const fileHandle = await window.showSaveFilePicker({
-            suggestedName: '.env',
-            types: [{
-              description: 'Environment files',
-              accept: { 'text/plain': ['.env'] }
-            }]
-          });
-          const writable = await fileHandle.createWritable();
-          await writable.write(envContent);
-          await writable.close();
-        } catch (err) {
-          // Se l'utente cancella il dialog, salva comunque nel localStorage
-          localStorage.setItem('mistral-api-key', key);
-        }
-      } else {
-        // Fallback: salva nel localStorage e mostra istruzioni
-        localStorage.setItem('mistral-api-key', key);
-        
-        // Crea e scarica automaticamente il file .env
-        const blob = new Blob([envContent], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = '.env';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        toast({
-          title: t.apiKeySaved,
-          description: t.envFileDownloaded,
-          duration: 8000,
-        });
-      }
-    } catch (error) {
-      console.error('Error saving API key:', error);
-      // Fallback: salva solo nel localStorage
-      localStorage.setItem('mistral-api-key', key);
-    }
-    
-    setIsSettingsOpen(false);
-  };
 
   const createNewDocument = () => {
     const newId = Date.now().toString();
@@ -231,17 +169,17 @@ const TabTextPro = () => {
       return;
     }
 
-    // Get fresh API key from .env or localStorage
-    const currentApiKey = import.meta.env.VITE_MISTRAL_API_KEY || 
-                         localStorage.getItem('mistral-api-key') || 
-                         mistralApiKey;
+    // Get API key from .env file
+    const currentApiKey = import.meta.env.VITE_MISTRAL_API_KEY;
     
     if (!currentApiKey || currentApiKey.trim() === '') {
       toast({
         title: t.apiKeyRequired,
-        description: t.apiKeyRequiredDescription,
+        description: language === 'it' 
+          ? 'Configura la chiave API Mistral nel file .env per utilizzare il miglioramento IA.'
+          : 'Configure your Mistral API key in the .env file to use AI improvement.',
+        variant: "destructive",
       });
-      setIsSettingsOpen(true);
       return;
     }
 
@@ -486,68 +424,6 @@ const TabTextPro = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t.settingsTitle}</DialogTitle>
-                <DialogDescription>
-                  {t.settingsDescription}
-                  <br /><br />
-                  <strong>{language === 'it' ? 'Istruzioni per il salvataggio persistente:' : 'Instructions for persistent storage:'}</strong>
-                  <br />
-                  {language === 'it' 
-                    ? '1. Inserisci la tua chiave API e clicca "Salva"'
-                    : '1. Enter your API key and click "Save"'
-                  }
-                  <br />
-                  {language === 'it' 
-                    ? '2. Il file .env verrà scaricato automaticamente'
-                    : '2. The .env file will be downloaded automatically'
-                  }
-                  <br />
-                  {language === 'it' 
-                    ? '3. Posiziona il file .env nella directory principale del progetto'
-                    : '3. Place the .env file in your project root directory'
-                  }
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="apiKey">{t.apiKeyLabel}</Label>
-                  <Input
-                    id="apiKey"
-                    type="password"
-                    placeholder={t.apiKeyPlaceholder}
-                    defaultValue={mistralApiKey}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        saveApiKey((e.target as HTMLInputElement).value);
-                      }
-                    }}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t.apiKeyDescription}
-                  </p>
-                </div>
-                <Button 
-                  onClick={() => {
-                    const input = document.getElementById('apiKey') as HTMLInputElement;
-                    saveApiKey(input.value);
-                  }}
-                  className="w-full"
-                >
-                  <Key className="h-4 w-4 mr-2" />
-                  {t.saveApiKey}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
 
           <Button 
             variant="ghost" 

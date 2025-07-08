@@ -7,7 +7,6 @@ export interface Translations {
   undo: string;
   findReplace: string;
   aiImprove: string;
-  settings: string;
   
   // Find and Replace Dialog
   findReplaceTitle: string;
@@ -15,14 +14,6 @@ export interface Translations {
   replacePlaceholder: string;
   caseSensitive: string;
   replaceAll: string;
-  
-  // Settings Dialog
-  settingsTitle: string;
-  settingsDescription: string;
-  apiKeyLabel: string;
-  apiKeyPlaceholder: string;
-  apiKeyDescription: string;
-  saveApiKey: string;
   
   // Document
   untitledDocument: string;
@@ -38,9 +29,6 @@ export interface Translations {
   // Toast Messages
   documentSaved: string;
   documentSavedDescription: string;
-  apiKeySaved: string;
-  apiKeySavedDescription: string;
-  envFileDownloaded: string;
   replaceCompleted: string;
   replaceCompletedDescription: string;
   noMatchesFound: string;
@@ -73,7 +61,6 @@ export const translations: Record<string, Translations> = {
     undo: "Undo",
     findReplace: "Find",
     aiImprove: "AI Improve",
-    settings: "Settings",
     
     // Find and Replace Dialog
     findReplaceTitle: "Find and Replace",
@@ -81,14 +68,6 @@ export const translations: Record<string, Translations> = {
     replacePlaceholder: "Replace with...",
     caseSensitive: "Case sensitive",
     replaceAll: "Replace All",
-    
-    // Settings Dialog
-    settingsTitle: "Settings",
-    settingsDescription: "Configure your Mistral API key to enable AI text improvement. Now using Mistral Large for superior results.",
-    apiKeyLabel: "Mistral API Key",
-    apiKeyPlaceholder: "Enter your Mistral API key...",
-    apiKeyDescription: "Your API key is stored locally in your browser and never shared.",
-    saveApiKey: "Save API Key",
     
     // Document
     untitledDocument: "Untitled Document",
@@ -104,9 +83,6 @@ export const translations: Record<string, Translations> = {
     // Toast Messages
     documentSaved: "Document saved",
     documentSavedDescription: "has been saved successfully.",
-    apiKeySaved: "API Key Saved",
-    apiKeySavedDescription: "Your Mistral API key has been saved securely in your browser.",
-    envFileDownloaded: "The .env file has been downloaded. Place it in your project root directory to make the API key persistent across sessions.",
     replaceCompleted: "Replace completed",
     replaceCompletedDescription: "Replaced",
     noMatchesFound: "No matches found",
@@ -138,7 +114,6 @@ export const translations: Record<string, Translations> = {
     undo: "Annulla",
     findReplace: "Trova",
     aiImprove: "Migliora IA",
-    settings: "Impostazioni",
     
     // Find and Replace Dialog
     findReplaceTitle: "Trova e Sostituisci",
@@ -146,14 +121,6 @@ export const translations: Record<string, Translations> = {
     replacePlaceholder: "Sostituisci con...",
     caseSensitive: "Maiuscole/minuscole",
     replaceAll: "Sostituisci Tutto",
-    
-    // Settings Dialog
-    settingsTitle: "Impostazioni",
-    settingsDescription: "Configura la tua chiave API Mistral per abilitare il miglioramento del testo con IA. Ora utilizza Mistral Large per risultati superiori.",
-    apiKeyLabel: "Chiave API Mistral",
-    apiKeyPlaceholder: "Inserisci la tua chiave API Mistral...",
-    apiKeyDescription: "La tua chiave API è memorizzata localmente nel browser e non viene mai condivisa.",
-    saveApiKey: "Salva Chiave API",
     
     // Document
     untitledDocument: "Documento Senza Titolo",
@@ -169,9 +136,6 @@ export const translations: Record<string, Translations> = {
     // Toast Messages
     documentSaved: "Documento salvato",
     documentSavedDescription: "è stato salvato con successo.",
-    apiKeySaved: "Chiave API Salvata",
-    apiKeySavedDescription: "La tua chiave API Mistral è stata salvata in modo sicuro nel browser.",
-    envFileDownloaded: "Il file .env è stato scaricato. Posizionalo nella directory principale del progetto per rendere la chiave API persistente tra le sessioni.",
     replaceCompleted: "Sostituzione completata",
     replaceCompletedDescription: "Sostituito",
     noMatchesFound: "Nessuna corrispondenza trovata",
