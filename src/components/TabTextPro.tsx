@@ -1,12 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Plus, X, FileText, Save, FolderOpen, Search, RotateCcw, Moon, Sun, Sparkles, Key, Settings } from 'lucide-react';
+import { Plus, X, FileText, Save, FolderOpen, Search, RotateCcw, Moon, Sun, Sparkles, Key, Settings, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/hooks/useLanguage';
+import { Language } from '@/lib/translations';
 
 interface Document {
   id: string;
@@ -17,8 +20,9 @@ interface Document {
 }
 
 const TabTextPro = () => {
+  const { language, t, changeLanguage } = useLanguage();
   const [documents, setDocuments] = useState<Document[]>([
-    { id: '1', title: 'Untitled Document', content: '', saved: true, wordCount: 0 }
+    { id: '1', title: t.untitledDocument, content: '', saved: true, wordCount: 0 }
   ]);
   const [activeTab, setActiveTab] = useState('1');
   const [darkMode, setDarkMode] = useState(() => {
@@ -54,8 +58,8 @@ const TabTextPro = () => {
     localStorage.setItem('mistral-api-key', key);
     setIsSettingsOpen(false);
     toast({
-      title: "API Key Saved",
-      description: "Your Mistral API key has been saved securely in your browser.",
+      title: t.apiKeySaved,
+      description: t.apiKeySavedDescription,
     });
   };
 
@@ -63,7 +67,7 @@ const TabTextPro = () => {
     const newId = Date.now().toString();
     const newDoc: Document = {
       id: newId,
-      title: 'Untitled Document',
+      title: t.untitledDocument,
       content: '',
       saved: true,
       wordCount: 0
@@ -108,8 +112,8 @@ const TabTextPro = () => {
     );
     
     toast({
-      title: "Document saved",
-      description: `${doc.title} has been saved successfully.`,
+      title: t.documentSaved,
+      description: `${doc.title} ${t.documentSavedDescription}`,
     });
   };
 
@@ -151,13 +155,13 @@ const TabTextPro = () => {
     if (newContent !== doc.content) {
       updateDocument(activeTab, newContent);
       toast({
-        title: "Replace completed",
-        description: `Replaced "${searchTerm}" with "${replaceTerm}".`,
+        title: t.replaceCompleted,
+        description: `${t.replaceCompletedDescription} "${searchTerm}" ${t.replaceCompletedDescription.includes('with') ? 'with' : 'con'} "${replaceTerm}".`,
       });
     } else {
       toast({
-        title: "No matches found",
-        description: `No instances of "${searchTerm}" were found.`,
+        title: t.noMatchesFound,
+        description: `${t.noMatchesFoundDescription} "${searchTerm}" ${language === 'en' ? 'were found' : 'sono state trovate'}.`,
       });
     }
   };
@@ -166,8 +170,8 @@ const TabTextPro = () => {
     const doc = documents.find(d => d.id === activeTab);
     if (!doc || !doc.content.trim()) {
       toast({
-        title: "No content to improve",
-        description: "Please add some text before using the AI improver.",
+        title: t.noContentToImprove,
+        description: t.noContentToImproveDescription,
       });
       return;
     }
@@ -177,8 +181,8 @@ const TabTextPro = () => {
     
     if (!currentApiKey || currentApiKey.trim() === '') {
       toast({
-        title: "API Key Required",
-        description: "Please add your Mistral API key in settings to use AI improvement.",
+        title: t.apiKeyRequired,
+        description: t.apiKeyRequiredDescription,
       });
       setIsSettingsOpen(true);
       return;
@@ -232,8 +236,8 @@ const TabTextPro = () => {
       if (improvedText && improvedText.trim()) {
         updateDocument(activeTab, improvedText.trim());
         toast({
-          title: "Text Improved",
-          description: "Your text has been enhanced by AI.",
+          title: t.textImproved,
+          description: t.textImprovedDescription,
         });
       } else {
         throw new Error('No improved text received from API');
@@ -241,8 +245,8 @@ const TabTextPro = () => {
     } catch (error) {
       console.error('Mistral API error:', error);
       toast({
-        title: "AI Improvement Failed",
-        description: error instanceof Error ? error.message : "There was an error improving your text. Please check your API key and try again.",
+        title: t.aiImprovementFailed,
+        description: error instanceof Error ? error.message : t.aiImprovementFailedDescription,
         variant: "destructive",
       });
     } finally {
@@ -253,8 +257,8 @@ const TabTextPro = () => {
   const undoAction = () => {
     // Mock undo functionality
     toast({
-      title: "Undo",
-      description: "Undo functionality would revert the last change.",
+      title: t.undoAction,
+      description: t.undoActionDescription,
     });
   };
 
@@ -266,46 +270,46 @@ const TabTextPro = () => {
       <header className="border-b border-border bg-card px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FileText className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-heading font-bold text-foreground">TabText Pro</h1>
+          <h1 className="text-xl font-heading font-bold text-foreground">{t.appTitle}</h1>
         </div>
         
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={createNewDocument}>
             <Plus className="h-4 w-4 mr-1" />
-            New
+            {t.newDocument}
           </Button>
           <Button variant="ghost" size="sm" onClick={openFile}>
             <FolderOpen className="h-4 w-4 mr-1" />
-            Open
+            {t.openFile}
           </Button>
           <Button variant="ghost" size="sm" onClick={saveDocument}>
             <Save className="h-4 w-4 mr-1" />
-            Save
+            {t.saveDocument}
           </Button>
           <Button variant="ghost" size="sm" onClick={undoAction}>
             <RotateCcw className="h-4 w-4 mr-1" />
-            Undo
+            {t.undo}
           </Button>
           
           <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
             <DialogTrigger asChild>
               <Button variant="ghost" size="sm">
                 <Search className="h-4 w-4 mr-1" />
-                Find
+                {t.findReplace}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Find and Replace</DialogTitle>
+                <DialogTitle>{t.findReplaceTitle}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <Input
-                  placeholder="Find..."
+                  placeholder={t.findPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <Input
-                  placeholder="Replace with..."
+                  placeholder={t.replacePlaceholder}
                   value={replaceTerm}
                   onChange={(e) => setReplaceTerm(e.target.value)}
                 />
@@ -317,10 +321,10 @@ const TabTextPro = () => {
                     onChange={(e) => setCaseSensitive(e.target.checked)}
                     className="rounded"
                   />
-                  <label htmlFor="caseSensitive" className="text-sm">Case sensitive</label>
+                  <label htmlFor="caseSensitive" className="text-sm">{t.caseSensitive}</label>
                 </div>
                 <Button onClick={findAndReplace} className="w-full">
-                  Replace All
+                  {t.replaceAll}
                 </Button>
               </div>
             </DialogContent>
@@ -328,8 +332,31 @@ const TabTextPro = () => {
 
           <Button variant="ghost" size="sm" onClick={improveText} disabled={isImproving}>
             <Sparkles className="h-4 w-4 mr-1" />
-            {isImproving ? 'Improving...' : 'AI Improve'}
+            {isImproving ? t.improving : t.aiImprove}
           </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Languages className="h-4 w-4 mr-1" />
+                {t.language}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem 
+                onClick={() => changeLanguage('en')}
+                className={language === 'en' ? 'bg-accent' : ''}
+              >
+                English
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => changeLanguage('it')}
+                className={language === 'it' ? 'bg-accent' : ''}
+              >
+                Italiano
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
             <DialogTrigger asChild>
@@ -339,18 +366,18 @@ const TabTextPro = () => {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Settings</DialogTitle>
+                <DialogTitle>{t.settingsTitle}</DialogTitle>
                 <DialogDescription>
-                  Configure your Mistral API key to enable AI text improvement.
+                  {t.settingsDescription}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="apiKey">Mistral API Key</Label>
+                  <Label htmlFor="apiKey">{t.apiKeyLabel}</Label>
                   <Input
                     id="apiKey"
                     type="password"
-                    placeholder="Enter your Mistral API key..."
+                    placeholder={t.apiKeyPlaceholder}
                     defaultValue={mistralApiKey}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -359,7 +386,7 @@ const TabTextPro = () => {
                     }}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Your API key is stored locally in your browser and never shared.
+                    {t.apiKeyDescription}
                   </p>
                 </div>
                 <Button 
@@ -370,7 +397,7 @@ const TabTextPro = () => {
                   className="w-full"
                 >
                   <Key className="h-4 w-4 mr-2" />
-                  Save API Key
+                  {t.saveApiKey}
                 </Button>
               </div>
             </DialogContent>
@@ -423,7 +450,7 @@ const TabTextPro = () => {
                 value={doc.content}
                 onChange={(e) => updateDocument(doc.id, e.target.value)}
                 className="editor-area h-full min-h-[500px] resize-none border-0 focus:ring-0 font-body text-base leading-relaxed p-6"
-                placeholder="Start typing your document..."
+                placeholder={t.editorPlaceholder}
               />
             </TabsContent>
           ))}
@@ -433,12 +460,12 @@ const TabTextPro = () => {
       {/* Status Bar */}
       <footer className="status-bar px-4 py-2 flex items-center justify-between text-sm text-muted-foreground">
         <div className="flex items-center gap-4">
-          <span>{activeDocument?.title || 'No document'}</span>
-          <span>Words: {activeDocument?.wordCount || 0}</span>
-          <span>{activeDocument?.saved ? 'Saved' : 'Unsaved'}</span>
+          <span>{activeDocument?.title || t.noDocument}</span>
+          <span>{t.words}: {activeDocument?.wordCount || 0}</span>
+          <span>{activeDocument?.saved ? t.saved : t.unsaved}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span>TabText Pro v1.0</span>
+          <span>{t.version}</span>
         </div>
       </footer>
 
