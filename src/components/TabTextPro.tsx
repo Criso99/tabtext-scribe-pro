@@ -36,7 +36,7 @@ const TabTextPro = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [mistralApiKey, setMistralApiKey] = useState(() => {
     // Prima prova a leggere dal .env, poi dal localStorage come fallback
-    return import.meta.env.VITE_MISTRAL_API_KEY || localStorage.getItem('mistral-api-key') || '';
+    return import.meta.env.VITE_MISTRAL_API_KEY || localStorage.getItem('VITE_MISTRAL_API_KEY') || '';
   });
   const [isImproving, setIsImproving] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
