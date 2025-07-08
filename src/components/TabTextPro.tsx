@@ -39,6 +39,8 @@ const TabTextPro = () => {
     return import.meta.env.VITE_MISTRAL_API_KEY || localStorage.getItem('mistral-api-key') || '';
   });
   const [isImproving, setIsImproving] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [lastRequestTime, setLastRequestTime] = useState(0);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -211,6 +213,14 @@ const TabTextPro = () => {
     }
   };
 
+  // Helper function to wait for a specified time
+  const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  // Helper function to calculate retry delay with exponential backoff
+  const getRetryDelay = (attempt: number) => {
+    return Math.min(1000 * Math.pow(2, attempt), 30000); // Max 30 seconds
+  };
+
   const improveText = async () => {
     const doc = documents.find(d => d.id === activeTab);
     if (!doc || !doc.content.trim()) {
@@ -235,57 +245,107 @@ const TabTextPro = () => {
       return;
     }
 
+    // Check if we should wait before making another request (minimum 1 second between requests)
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTime;
+    if (timeSinceLastRequest < 1000) {
+      await wait(1000 - timeSinceLastRequest);
+    }
+
     setIsImproving(true);
+    setLastRequestTime(Date.now());
     
-    try {
-      console.log('Making request to Mistral API...'); // Debug log
-      
-      const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${currentApiKey.trim()}`,
-        },
-        body: JSON.stringify({
-          model: 'mistral-large-latest',
-          messages: [
-            {
-              role: 'system',
-              content: language === 'it' 
-                ? 'Sei un editor di testo professionale. Migliora il seguente testo correggendo grammatica, ortografia, stile e tono. Mantieni la lingua originale del testo. Restituisci solo il testo migliorato senza spiegazioni o commenti aggiuntivi.'
-                : 'You are a professional text editor. Improve the following text by correcting grammar, spelling, style, and tone. Maintain the original language of the text. Return only the improved text without any explanations or additional commentary.'
-            },
-            {
-              role: 'user',
-              content: language === 'it' 
-                ? `Migliora questo testo: ${doc.content}`
-                : `Improve this text: ${doc.content}`
+    const makeRequest = async (attempt: number = 0): Promise<any> => {
+      try {
+        console.log(`Making request to Mistral API (attempt ${attempt + 1})...`);
+        
+        const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentApiKey.trim()}`,
+          },
+          body: JSON.stringify({
+            model: 'mistral-large-latest',
+            messages: [
+              {
+                role: 'system',
+                content: language === 'it' 
+                  ? 'Sei un editor di testo professionale. Migliora il seguente testo correggendo grammatica, ortografia, stile e tono. Mantieni la lingua originale del testo. Restituisci solo il testo migliorato senza spiegazioni o commenti aggiuntivi.'
+                  : 'You are a professional text editor. Improve the following text by correcting grammar, spelling, style, and tone. Maintain the original language of the text. Return only the improved text without any explanations or additional commentary.'
+              },
+              {
+                role: 'user',
+                content: language === 'it' 
+                  ? `Migliora questo testo: ${doc.content}`
+                  : `Improve this text: ${doc.content}`
+              }
+            ],
+            temperature: 0.3,
+            max_tokens: 4000,
+          }),
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Invalid API key. Please check your Mistral API key and try again.');
+          } else if (response.status === 429) {
+            // Rate limit exceeded - implement retry with exponential backoff
+            if (attempt < 3) { // Max 3 retries
+              const delay = getRetryDelay(attempt);
+              const waitSeconds = Math.ceil(delay / 1000);
+              
+              toast({
+                title: language === 'it' ? 'Limite di richieste raggiunto' : 'Rate limit reached',
+                description: language === 'it' 
+                  ? `Riprovo tra ${waitSeconds} secondi... (tentativo ${attempt + 2}/4)`
+                  : `Retrying in ${waitSeconds} seconds... (attempt ${attempt + 2}/4)`,
+                duration: delay,
+              });
+              
+              await wait(delay);
+              return makeRequest(attempt + 1);
+            } else {
+              throw new Error(language === 'it' 
+                ? 'Limite di richieste raggiunto. Riprova tra qualche minuto.'
+                : 'Rate limit exceeded. Please try again in a few minutes.');
             }
-          ],
-          temperature: 0.3,
-          max_tokens: 4000,
-        }),
-      });
-
-      console.log('Response status:', response.status); // Debug log
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Invalid API key. Please check your Mistral API key and try again.');
-        } else if (response.status === 429) {
-          throw new Error('Rate limit exceeded. Please wait a moment and try again.');
-        } else {
-          throw new Error(`API request failed with status ${response.status}`);
+          } else {
+            throw new Error(`API request failed with status ${response.status}`);
+          }
         }
-      }
 
-      const data = await response.json();
-      console.log('API response received:', data); // Debug log
-      
+        const data = await response.json();
+        console.log('API response received:', data);
+        
+        return data;
+      } catch (error) {
+        // If it's a network error and we haven't exceeded retry attempts, try again
+        if (attempt < 2 && error instanceof TypeError && error.message.includes('fetch')) {
+          const delay = getRetryDelay(attempt);
+          toast({
+            title: language === 'it' ? 'Errore di connessione' : 'Connection error',
+            description: language === 'it' 
+              ? `Riprovo tra ${Math.ceil(delay / 1000)} secondi...`
+              : `Retrying in ${Math.ceil(delay / 1000)} seconds...`,
+            duration: delay,
+          });
+          await wait(delay);
+          return makeRequest(attempt + 1);
+        }
+        throw error;
+      }
+    };
+
+    try {
+      const data = await makeRequest();
       const improvedText = data.choices?.[0]?.message?.content;
 
       if (improvedText && improvedText.trim()) {
         updateDocument(activeTab, improvedText.trim());
+        setRetryCount(0); // Reset retry count on success
         toast({
           title: t.textImproved,
           description: t.textImprovedDescription,
@@ -295,10 +355,28 @@ const TabTextPro = () => {
       }
     } catch (error) {
       console.error('Mistral API error:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = t.aiImprovementFailedDescription;
+      if (error instanceof Error) {
+        if (error.message.includes('Rate limit')) {
+          errorMessage = language === 'it' 
+            ? 'Hai raggiunto il limite di richieste API. Attendi qualche minuto prima di riprovare.'
+            : 'You have reached the API rate limit. Please wait a few minutes before trying again.';
+        } else if (error.message.includes('Invalid API key')) {
+          errorMessage = language === 'it'
+            ? 'Chiave API non valida. Controlla la tua chiave Mistral nelle impostazioni.'
+            : 'Invalid API key. Please check your Mistral API key in settings.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       toast({
         title: t.aiImprovementFailed,
-        description: error instanceof Error ? error.message : t.aiImprovementFailedDescription,
+        description: errorMessage,
         variant: "destructive",
+        duration: 8000,
       });
     } finally {
       setIsImproving(false);
