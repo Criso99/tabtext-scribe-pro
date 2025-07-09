@@ -3,7 +3,7 @@ export interface Translations {
   appTitle: string;
   newDocument: string;
   openFile: string;
-  saveDocument: string;
+  saveAsDocument: string;
   undo: string;
   findReplace: string;
   aiImprove: string;
@@ -14,6 +14,12 @@ export interface Translations {
   replacePlaceholder: string;
   caseSensitive: string;
   replaceAll: string;
+  
+  // Save As Dialog
+  saveAsTitle: string;
+  fileNamePlaceholder: string;
+  saveButton: string;
+  cancelButton: string;
   
   // Document
   untitledDocument: string;
@@ -58,7 +64,7 @@ export const translations: Record<string, Translations> = {
     appTitle: "TabText Pro",
     newDocument: "New",
     openFile: "Open",
-    saveDocument: "Save",
+    saveAsDocument: "Save",
     undo: "Undo",
     findReplace: "Find",
     aiImprove: "AI Improve",
@@ -69,6 +75,12 @@ export const translations: Record<string, Translations> = {
     replacePlaceholder: "Replace with...",
     caseSensitive: "Case sensitive",
     replaceAll: "Replace All",
+    
+    // Save As Dialog
+    saveAsTitle: "Save Document As",
+    fileNamePlaceholder: "Enter file name...",
+    saveButton: "Save",
+    cancelButton: "Cancel",
     
     // Document
     untitledDocument: "Untitled Document",
@@ -112,7 +124,7 @@ export const translations: Record<string, Translations> = {
     appTitle: "TabText Pro",
     newDocument: "Nuovo",
     openFile: "Apri",
-    saveDocument: "Salva",
+    saveAsDocument: "Salva",
     undo: "Annulla",
     findReplace: "Trova",
     aiImprove: "Migliora IA",
@@ -123,6 +135,12 @@ export const translations: Record<string, Translations> = {
     replacePlaceholder: "Sostituisci con...",
     caseSensitive: "Maiuscole/minuscole",
     replaceAll: "Sostituisci Tutto",
+    
+    // Save As Dialog
+    saveAsTitle: "Salva Documento Come",
+    fileNamePlaceholder: "Inserisci nome file...",
+    saveButton: "Salva",
+    cancelButton: "Annulla",
     
     // Document
     untitledDocument: "Documento Senza Titolo",

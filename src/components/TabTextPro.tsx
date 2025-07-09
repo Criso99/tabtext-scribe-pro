@@ -33,6 +33,8 @@ const TabTextPro = () => {
   const [replaceTerm, setReplaceTerm] = useState('');
   const [caseSensitive, setCaseSensitive] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSaveAsOpen, setIsSaveAsOpen] = useState(false);
+  const [customFileName, setCustomFileName] = useState('');
   const [isImproving, setIsImproving] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [lastRequestTime, setLastRequestTime] = useState(0);
@@ -93,12 +95,24 @@ const TabTextPro = () => {
     );
   };
 
-  const saveDocument = () => {
+
+
+  const saveAsDocument = () => {
     const doc = documents.find(d => d.id === activeTab);
     if (!doc) return;
 
-    // Create and download file
-    const fileName = doc.title.endsWith('.txt') ? doc.title : `${doc.title}.txt`;
+    // Set initial filename for the dialog
+    const initialFileName = doc.title === t.untitledDocument ? '' : doc.title.replace(/\.txt$/, '');
+    setCustomFileName(initialFileName);
+    setIsSaveAsOpen(true);
+  };
+
+  const handleSaveAs = () => {
+    const doc = documents.find(d => d.id === activeTab);
+    if (!doc || !customFileName.trim()) return;
+
+    // Create and download file with custom name
+    const fileName = customFileName.endsWith('.txt') ? customFileName : `${customFileName}.txt`;
     const blob = new Blob([doc.content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     
@@ -110,10 +124,13 @@ const TabTextPro = () => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    // Mark as saved
+    // Update document title and mark as saved
     setDocuments(docs => 
-      docs.map(d => d.id === activeTab ? { ...d, saved: true } : d)
+      docs.map(d => d.id === activeTab ? { ...d, title: fileName, saved: true } : d)
     );
+    
+    setIsSaveAsOpen(false);
+    setCustomFileName('');
     
     toast({
       title: t.documentSaved,
@@ -214,7 +231,7 @@ const TabTextPro = () => {
     setIsImproving(true);
     setLastRequestTime(Date.now());
     
-    const makeRequest = async (attempt: number = 0): Promise<any> => {
+    const makeRequest = async (attempt: number = 0): Promise<{ choices?: Array<{ message?: { content?: string } }> }> => {
       try {
         console.log(`Making request to Mistral API (attempt ${attempt + 1})...`);
         
@@ -388,7 +405,7 @@ const TabTextPro = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [activeTab, documents]);
+  }, [activeTab, documents, undoAction]);
 
   const activeDocument = documents.find(doc => doc.id === activeTab);
 
@@ -410,9 +427,9 @@ const TabTextPro = () => {
             <FolderOpen className="h-4 w-4 mr-1" />
             {t.openFile}
           </Button>
-          <Button variant="ghost" size="sm" onClick={saveDocument}>
+          <Button variant="ghost" size="sm" onClick={saveAsDocument}>
             <Save className="h-4 w-4 mr-1" />
-            {t.saveDocument}
+            {t.saveAsDocument}
           </Button>
           <Button variant="ghost" size="sm" onClick={undoAction}>
             <RotateCcw className="h-4 w-4 mr-1" />
@@ -454,6 +471,34 @@ const TabTextPro = () => {
                 <Button onClick={findAndReplace} className="w-full">
                   {t.replaceAll}
                 </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={isSaveAsOpen} onOpenChange={setIsSaveAsOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t.saveAsTitle}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Input
+                  placeholder={t.fileNamePlaceholder}
+                  value={customFileName}
+                  onChange={(e) => setCustomFileName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveAs();
+                    }
+                  }}
+                />
+                <div className="flex gap-2">
+                  <Button onClick={handleSaveAs} className="flex-1" disabled={!customFileName.trim()}>
+                    {t.saveButton}
+                  </Button>
+                  <Button variant="outline" onClick={() => setIsSaveAsOpen(false)} className="flex-1">
+                    {t.cancelButton}
+                  </Button>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
