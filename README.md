@@ -170,5 +170,5 @@ Open the link in your browser and you can use TabText PRO
 </p>
 
 <p align="center">
-  <img src="[URL_DELLA_TUA_IMMAGINE](https://github.com/Criso99/tabtext-scribe-pro/blob/main/public/cover.png)" alt="TabText PRO cover" width="600"/>
+  <img src="public/cover.png" alt="TabText PRO cover" width="600"/>
 </p>
