@@ -170,5 +170,5 @@ Open the link in your browser and you can use TabText PRO
 </p>
 
 <p align="center">
-  <img src="public/cover.png" alt="TabText PRO cover" width="600"/>
+  <img src="public/cover.png" alt="TabText PRO cover" width="1920"/>
 </p>
