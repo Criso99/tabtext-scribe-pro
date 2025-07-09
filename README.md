@@ -79,6 +79,9 @@ Vedrai un link (di solito `http://localhost:8080`) su cui cliccare per aprire Ta
 
 Apri il link sul tuo Browser e potrai usare TabText PRO
 
+**Se non vuoi scaricare o installare nulla, puoi provare TabText Pro direttamente online qui:**  
+👉 [TabText PRO](https://tabtext-scribe-pro.vercel.app)
+
 **Se TabText Pro ti è piaciuto o ti è stato utile, lascia una ⭐️ al progetto! Il tuo supporto è importante e ci aiuta a continuare a migliorare e condividere nuove funzionalità.**
 
 ---
@@ -145,6 +148,9 @@ npm run dev
 You will see a link (usually `http://localhost:8080`) to open TabText Pro in your browser.
 
 Open the link in your browser and you can use TabText PRO
+
+**If you don’t want to download or install anything, you can try TabText Pro directly online here:**  
+👉 [TabText PRO](https://tabtext-scribe-pro.vercel.app)
 
 **If you liked TabText Pro or found it useful, please leave a ⭐️ to the project! Your support is important and helps us continue to improve and share new features.**
 
