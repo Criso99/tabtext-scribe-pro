@@ -73,7 +73,7 @@ Vedrai un link (di solito `http://localhost:8080`) su cui cliccare per aprire Ta
 
 Apri il link sul tuo Browser e potrai usare TabText PRO
 
-** Se TabText Pro ti è piaciuto o ti è stato utile, lascia una ⭐️ al progetto! Il tuo supporto è importante e ci aiuta a continuare a migliorare e condividere nuove funzionalità.**
+**Se TabText Pro ti è piaciuto o ti è stato utile, lascia una ⭐️ al progetto! Il tuo supporto è importante e ci aiuta a continuare a migliorare e condividere nuove funzionalità.**
 
 ---
 
