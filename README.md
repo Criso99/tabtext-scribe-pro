@@ -157,3 +157,7 @@ Open the link in your browser and you can use TabText PRO
 - [TabText Pro Repository](https://github.com/Criso99/tabtext-scribe-pro)
 
 ---
+
+<p align="center">
+  <b>Made with 🤍 by a 14-year-old</b>
+</p>
