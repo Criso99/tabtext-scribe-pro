@@ -4,8 +4,8 @@
 
 ## Indice / Table of Contents
 
-- 🇮🇹 [Italiano](#-descrizione)
-- 🇺🇸 [English](#-description)
+**- 🇮🇹 [Italiano](#-descrizione)**
+**- 🇺🇸 [English](#-description)**
 
 ---
 
