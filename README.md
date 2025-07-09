@@ -2,7 +2,7 @@
 
 ---
 
-## Indice / Table of Contents
+## Indice delle Lingue / Languages Index
 
 **- 🇮🇹 [Italiano](#-descrizione)**
 
@@ -73,6 +73,8 @@ Vedrai un link (di solito `http://localhost:8080`) su cui cliccare per aprire Ta
 
 Apri il link sul tuo Browser e potrai usare TabText PRO
 
+** Se TabText Pro ti è piaciuto o ti è stato utile, lascia una ⭐️ al progetto! Il tuo supporto è importante e ci aiuta a continuare a migliorare e condividere nuove funzionalità.**
+
 ---
 
 ## 🇺🇸 Description
@@ -137,6 +139,8 @@ npm run dev
 You will see a link (usually `http://localhost:8080`) to open TabText Pro in your browser.
 
 Open the link in your browser and you can use TabText PRO
+
+**If you liked TabText Pro or found it useful, please leave a ⭐️ to the project! Your support is important and helps us continue to improve and share new features.**
 
 ---
 
