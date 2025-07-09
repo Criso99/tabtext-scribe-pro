@@ -1,6 +1,11 @@
 # TabText Pro
 
-Modern multi-tab text editor with AI-powered improvements
+---
+
+## Indice / Table of Contents
+
+- 🇮🇹 [Italiano](#-descrizione)
+- 🇺🇸 [English](#-description)
 
 ---
 
@@ -69,7 +74,7 @@ Apri il link sul tuo Browser e potrai usare TabText PRO
 
 ---
 
-## 🇬🇧 Description
+## 🇺🇸 Description
 
 TabText Pro is a modern, multi-tab text editor with custom save and AI-powered text improvement. Simple, fast, and open source!
 
@@ -83,8 +88,6 @@ TabText Pro is a modern, multi-tab text editor with custom save and AI-powered t
 - **Multilanguage**: Italian and English
 
 ---
-
-## 🚀 Getting Started (for everyone)
 
 ### 1. Prerequisites
 
@@ -136,7 +139,7 @@ Open the link in your browser and you can use TabText PRO
 
 ---
 
-## ℹ️ Useful Links
+## Link Utili / Useful Links
 
 - [Node.js Download](https://nodejs.org/)
 - [Git Download](https://git-scm.com/downloads)
