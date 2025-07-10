@@ -14,6 +14,8 @@
 
 **- 🇺🇸 [English](#-description)**
 
+**- 🇪🇸 [Español](#-descripción)**
+
 ---
 
 ## 🇮🇹 Descrizione
@@ -156,7 +158,75 @@ Open the link in your browser and you can use TabText PRO
 
 ---
 
-## Link Utili / Useful Links
+## 🇪🇸 Descripción
+TabText Pro es un editor de texto moderno, con múltiples pestañas, funciones de guardado personalizado y mejora de texto mediante inteligencia artificial. ¡Sencillo, rápido y de código abierto!
+
+### Funcionalidades principales
+
+- **Guardado personalizado**: siempre puedes elegir el nombre del archivo al guardar
+- **Múltiples pestañas**: trabaja en varios documentos al mismo tiempo
+- **Mejora con IA**: mejora el texto con un solo clic (La API de Mistral está incluida amablemente en el proyecto, pero por favor no la uses en otros proyectos. De lo contrario, nos veremos obligados a retirarla)
+- **Buscar y reemplazar**: busca y reemplaza texto fácilmente
+- **Tema claro/oscuro**
+- **Soporte multilingüe**: Italiano e Inglés
+
+### 1. Requisitos previos
+
+Para ejecutar TabText Pro necesitas Node.js (se recomienda la versión 18 o superior).
+
+- Descarga Node.js desde el sitio oficial: [Node.js](https://nodejs.org/)
+- Sigue el asistente de instalación para tu sistema operativo (Windows, Mac, Linux)
+- Después de la instalación, abre la terminal (Símbolo del sistema en Windows, Terminal en Mac/Linux) y escribe:
+
+```sh
+node -v
+npm -v
+```
+
+Si ves los números de versión, ¡estás listo!
+
+### 2. Descarga TabText Pro
+
+- Si tienes **experiencia con Git**:
+
+```sh
+git clone https://github.com/Criso99/tabtext-scribe-pro.git
+cd tabtext-scribe-pro
+```
+Si **NO tienes Git**:
+1. Ve a [TabText PRO](https://github.com/Criso99/tabtext-scribe-pro)
+2. Haz clic en "Code" > "Download ZIP"
+3. Extrae la carpeta donde prefieras
+4. Abre la terminal en la carpeta extraída
+
+### 3. Instala las dependencias
+
+En la terminal, ejecuta:
+
+```sh
+npm install
+```
+
+Este comando descargará todo lo necesario para que la app funcione.
+
+### 4. Inicia la aplicación
+
+También en la terminal:
+
+```sh
+npm run dev
+```
+
+Verás un enlace (normalmente http://localhost:8080) en el que puedes hacer clic para abrir TabText Pro en tu navegador.
+
+Abre el enlace en tu navegador y podrás usar TabText PRO.
+
+**Si no quieres descargar ni instalar nada, puedes probar TabText Pro directamente en línea aquí:**
+👉 [TabText PRO](https://tabtext-scribe-pro.vercel.app)
+
+**Si TabText Pro te gustó o te fue útil, ¡déjanos una ⭐️ en el proyecto! Tu apoyo es importante y nos ayuda a seguir mejorando y compartiendo nuevas funcionalidades.**
+
+## Link Utili / Useful Links / Enlaces útiles / Полезные ссылки / 实用链接
 
 - [Node.js Download](https://nodejs.org/)
 - [Git Download](https://git-scm.com/downloads)
