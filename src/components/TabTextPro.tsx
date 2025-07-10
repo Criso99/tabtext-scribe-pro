@@ -412,34 +412,34 @@ const TabTextPro = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b border-border bg-card px-4 py-2 flex items-center justify-between">
+      <header className="border-b border-border bg-card px-4 py-2 flex items-center justify-between shadow-sm transition-shadow duration-300 hover:shadow-md">
         <div className="flex items-center gap-2">
-          <FileText className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-heading font-bold text-foreground">{t.appTitle}</h1>
+          <FileText className="h-6 w-6 text-primary transition-transform duration-300 hover:scale-110" />
+          <h1 className="text-xl font-heading font-bold text-foreground tracking-tight transition-colors duration-300 hover:text-accent-foreground">
+            {t.appTitle}
+          </h1>
         </div>
-        
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={createNewDocument}>
-            <Plus className="h-4 w-4 mr-1" />
+          <Button variant="ghost" size="sm" onClick={createNewDocument} className="transition-all duration-200 hover:scale-105 active:scale-95">
+            <Plus className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:rotate-12" />
             {t.newDocument}
           </Button>
-          <Button variant="ghost" size="sm" onClick={openFile}>
-            <FolderOpen className="h-4 w-4 mr-1" />
+          <Button variant="ghost" size="sm" onClick={openFile} className="transition-all duration-200 hover:scale-105 active:scale-95">
+            <FolderOpen className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:rotate-12" />
             {t.openFile}
           </Button>
-          <Button variant="ghost" size="sm" onClick={saveAsDocument}>
-            <Save className="h-4 w-4 mr-1" />
+          <Button variant="ghost" size="sm" onClick={saveAsDocument} className="transition-all duration-200 hover:scale-105 active:scale-95">
+            <Save className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:rotate-12" />
             {t.saveAsDocument}
           </Button>
-          <Button variant="ghost" size="sm" onClick={undoAction}>
-            <RotateCcw className="h-4 w-4 mr-1" />
+          <Button variant="ghost" size="sm" onClick={undoAction} className="transition-all duration-200 hover:scale-105 active:scale-95">
+            <RotateCcw className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:-rotate-12" />
             {t.undo}
           </Button>
-          
           <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <Search className="h-4 w-4 mr-1" />
+              <Button variant="ghost" size="sm" className="transition-all duration-200 hover:scale-105 active:scale-95">
+                <Search className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:scale-125" />
                 {t.findReplace}
               </Button>
             </DialogTrigger>
@@ -452,11 +452,13 @@ const TabTextPro = () => {
                   placeholder={t.findPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  className="transition-shadow duration-200 focus:shadow-lg"
                 />
                 <Input
                   placeholder={t.replacePlaceholder}
                   value={replaceTerm}
                   onChange={(e) => setReplaceTerm(e.target.value)}
+                  className="transition-shadow duration-200 focus:shadow-lg"
                 />
                 <div className="flex items-center gap-2">
                   <input
@@ -464,17 +466,16 @@ const TabTextPro = () => {
                     id="caseSensitive"
                     checked={caseSensitive}
                     onChange={(e) => setCaseSensitive(e.target.checked)}
-                    className="rounded"
+                    className="rounded accent-accent transition-colors duration-200"
                   />
-                  <label htmlFor="caseSensitive" className="text-sm">{t.caseSensitive}</label>
+                  <label htmlFor="caseSensitive" className="text-sm select-none cursor-pointer">{t.caseSensitive}</label>
                 </div>
-                <Button onClick={findAndReplace} className="w-full">
+                <Button onClick={findAndReplace} className="w-full transition-all duration-200 hover:scale-105 active:scale-95">
                   {t.replaceAll}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
-
           <Dialog open={isSaveAsOpen} onOpenChange={setIsSaveAsOpen}>
             <DialogContent>
               <DialogHeader>
@@ -490,65 +491,81 @@ const TabTextPro = () => {
                       handleSaveAs();
                     }
                   }}
+                  className="transition-shadow duration-200 focus:shadow-lg"
                 />
                 <div className="flex gap-2">
-                  <Button onClick={handleSaveAs} className="flex-1" disabled={!customFileName.trim()}>
+                  <Button onClick={handleSaveAs} className="flex-1 transition-all duration-200 hover:scale-105 active:scale-95" disabled={!customFileName.trim()}>
                     {t.saveButton}
                   </Button>
-                  <Button variant="outline" onClick={() => setIsSaveAsOpen(false)} className="flex-1">
+                  <Button variant="outline" onClick={() => setIsSaveAsOpen(false)} className="flex-1 transition-all duration-200 hover:scale-105 active:scale-95">
                     {t.cancelButton}
                   </Button>
                 </div>
               </div>
             </DialogContent>
           </Dialog>
-
-          <Button variant="ghost" size="sm" onClick={improveText} disabled={isImproving}>
-            <Sparkles className="h-4 w-4 mr-1" />
+          <Button variant="ghost" size="sm" onClick={improveText} disabled={isImproving} className="transition-all duration-200 hover:scale-105 active:scale-95">
+            <Sparkles className={`h-4 w-4 mr-1 transition-transform duration-300 ${isImproving ? 'animate-spin' : 'group-hover:scale-125'}`} />
             {isImproving ? t.improving : t.aiImprove}
           </Button>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <Languages className="h-4 w-4 mr-1" />
+              <Button variant="ghost" size="sm" className="transition-all duration-200 hover:scale-105 active:scale-95">
+                <Languages className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:scale-125" />
                 {t.language}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className="animate-in fade-in-0 zoom-in-95">
               <DropdownMenuItem 
                 onClick={() => changeLanguage('en')}
                 className={language === 'en' ? 'bg-accent' : ''}
               >
-                English
+                English {language === 'en' && '✓'}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => changeLanguage('it')}
                 className={language === 'it' ? 'bg-accent' : ''}
               >
-                Italiano
+                Italiano {language === 'it' && '✓'}
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => changeLanguage('es')}
+                className={language === 'es' ? 'bg-accent' : ''}
+              >
+                Español {language === 'es' && '✓'}
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => changeLanguage('ru')}
+                className={language === 'ru' ? 'bg-accent' : ''}
+              >
+                Русский {language === 'ru' && '✓'}
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => changeLanguage('zh')}
+                className={language === 'zh' ? 'bg-accent' : ''}
+              >
+                中文 {language === 'zh' && '✓'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={() => setDarkMode(!darkMode)}
+            className="transition-all duration-200 hover:scale-110 active:scale-95"
           >
-            {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {darkMode ? <Sun className="h-4 w-4 transition-transform duration-200 hover:rotate-12" /> : <Moon className="h-4 w-4 transition-transform duration-200 hover:-rotate-12" />}
           </Button>
         </div>
       </header>
-
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsList className="w-full justify-start rounded-none bg-muted/50 p-0 h-auto">
+        <TabsList className="w-full justify-start rounded-none bg-muted/50 p-0 h-auto shadow-inner">
           {documents.map((doc) => (
             <TabsTrigger
               key={doc.id}
               value={doc.id}
-              className="tab-item relative px-4 py-2 flex items-center gap-2 rounded-none"
+              className="tab-item relative px-4 py-2 flex items-center gap-2 rounded-none transition-all duration-200 hover:bg-accent/60 hover:text-accent-foreground focus:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-md"
             >
               <span className="truncate max-w-32">
                 {doc.title}{!doc.saved && '*'}
@@ -557,7 +574,7 @@ const TabTextPro = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                  className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground transition-all duration-200 hover:scale-125"
                   onClick={(e) => {
                     e.stopPropagation();
                     closeDocument(doc.id);
@@ -569,7 +586,6 @@ const TabTextPro = () => {
             </TabsTrigger>
           ))}
         </TabsList>
-
         {/* Editor Area */}
         <div className="flex-1">
           {documents.map((doc) => (
@@ -577,23 +593,22 @@ const TabTextPro = () => {
               <Textarea
                 value={doc.content}
                 onChange={(e) => updateDocument(doc.id, e.target.value)}
-                className="editor-area h-full min-h-[500px] resize-none border-0 focus:ring-0 font-body text-base leading-relaxed p-6"
+                className="editor-area h-full min-h-[500px] resize-none border-0 focus:ring-0 font-body text-base leading-relaxed p-6 transition-shadow duration-200 focus:shadow-lg bg-background/80"
                 placeholder={t.editorPlaceholder}
               />
             </TabsContent>
           ))}
         </div>
       </Tabs>
-
       {/* Status Bar */}
-      <footer className="status-bar px-4 py-2 flex items-center justify-between text-sm text-muted-foreground">
+      <footer className="status-bar px-4 py-2 flex items-center justify-between text-sm text-muted-foreground bg-card/80 border-t border-border shadow-inner transition-shadow duration-300">
         <div className="flex items-center gap-4">
-          <span>{activeDocument?.title || t.noDocument}</span>
-          <span>{t.words}: {activeDocument?.wordCount || 0}</span>
-          <span>{activeDocument?.saved ? t.saved : t.unsaved}</span>
+          <span className="transition-colors duration-200 hover:text-foreground cursor-default">{activeDocument?.title || t.noDocument}</span>
+          <span className="transition-colors duration-200 hover:text-foreground cursor-default">{t.words}: {activeDocument?.wordCount || 0}</span>
+          <span className="transition-colors duration-200 hover:text-foreground cursor-default">{activeDocument?.saved ? t.saved : t.unsaved}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span>{t.version}</span>
+          <span className="tracking-tight font-mono transition-colors duration-200 hover:text-foreground cursor-default">{t.version}</span>
         </div>
       </footer>
 
