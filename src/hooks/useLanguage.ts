@@ -6,7 +6,7 @@ const LANGUAGE_STORAGE_KEY = 'tabtext-language';
 export const useLanguage = () => {
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (saved && (saved === 'en' || saved === 'it')) {
+    if (saved && ['en', 'it', 'es', 'ru', 'zh'].includes(saved)) {
       return saved as Language;
     }
     
@@ -14,6 +14,15 @@ export const useLanguage = () => {
     const browserLang = navigator.language.toLowerCase();
     if (browserLang.startsWith('it')) {
       return 'it';
+    }
+    if (browserLang.startsWith('es')) {
+      return 'es';
+    }
+    if (browserLang.startsWith('ru')) {
+      return 'ru';
+    }
+    if (browserLang.startsWith('zh')) {
+      return 'zh';
     }
     return 'en';
   });
