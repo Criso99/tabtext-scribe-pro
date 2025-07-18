@@ -17,12 +17,13 @@ interface Document {
   wordCount: number;
   history: string[];
   historyIndex: number;
+  isUntitled?: boolean; // New property to track untitled documents
 }
 
 const TabTextPro = () => {
   const { language, t, changeLanguage } = useLanguage();
   const [documents, setDocuments] = useState<Document[]>([
-    { id: '1', title: t.untitledDocument, content: '', saved: true, wordCount: 0, history: [''], historyIndex: 0 }
+    { id: '1', title: t.untitledDocument, content: '', saved: true, wordCount: 0, history: [''], historyIndex: 0, isUntitled: true }
   ]);
   const [activeTab, setActiveTab] = useState('1');
   const [darkMode, setDarkMode] = useState(() => {
@@ -52,6 +53,19 @@ const TabTextPro = () => {
     localStorage.setItem('tabtext-theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
+
+  useEffect(() => {
+    setDocuments(docs => 
+      docs.map(doc => {
+        // Only update title for untitled documents
+        if (doc.isUntitled) {
+          return { ...doc, title: t.untitledDocument };
+        }
+        return doc;
+      })
+    );
+  }, [t.untitledDocument]);
+
   const createNewDocument = () => {
     const newId = Date.now().toString();
     const newDoc: Document = {
@@ -61,7 +75,8 @@ const TabTextPro = () => {
       saved: true,
       wordCount: 0,
       history: [''],
-      historyIndex: 0
+      historyIndex: 0,
+      isUntitled: true // mark as untitled
     };
     setDocuments([...documents, newDoc]);
     setActiveTab(newId);
@@ -124,9 +139,9 @@ const TabTextPro = () => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    // Update document title and mark as saved
+    // Update document title and mark as saved (is not untitled anymore)
     setDocuments(docs => 
-      docs.map(d => d.id === activeTab ? { ...d, title: fileName, saved: true } : d)
+      docs.map(d => d.id === activeTab ? { ...d, title: fileName, saved: true, isUntitled: false } : d)
     );
     
     setIsSaveAsOpen(false);
@@ -157,7 +172,8 @@ const TabTextPro = () => {
         saved: true,
         wordCount: content.trim().split(/\s+/).filter(word => word.length > 0).length,
         history: [content],
-        historyIndex: 0
+        historyIndex: 0,
+        isUntitled: false 
       };
       setDocuments([...documents, newDoc]);
       setActiveTab(newId);
